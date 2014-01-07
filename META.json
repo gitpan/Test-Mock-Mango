@@ -33,11 +33,10 @@
       },
       "runtime" : {
          "requires" : {
-            "Mango" : "0.17",
-            "Readonly" : "1.03"
+            "Mango" : "0.17"
          }
       }
    },
    "release_status" : "stable",
-   "version" : "0.01"
+   "version" : "v0.01.1"
 }

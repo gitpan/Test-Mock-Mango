@@ -4,7 +4,7 @@ use v5.10;
 use strict;
 use warnings;
 
-our $VERSION = 0.01;
+our $VERSION = "0.01.1";
 
 require 'Mango.pm'; # Bit useless if you don't actually have mango
 use Test::Mock::Mango::FakeData;
@@ -30,7 +30,7 @@ __END__
 
 =head1 Title
 
-Test::Mock::Mango
+Test::Mock::Mango - Simple stubbing for Mango to allow unit tests for code that uses it
 
 =for html
 <a href="https://travis-ci.org/necrophonic/test-mock-mango"><img src="https://travis-ci.org/necrophonic/test-mock-mango.png?branch=master"></a>
