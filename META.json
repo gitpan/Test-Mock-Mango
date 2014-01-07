@@ -4,7 +4,7 @@
       "J Gregory <john@johngregory.me.uk>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "ExtUtils::MakeMaker version 6.66, CPAN::Meta::Converter version 2.132830",
+   "generated_by" : "ExtUtils::MakeMaker version 6.66, CPAN::Meta::Converter version 2.133380",
    "license" : [
       "artistic_2"
    ],
@@ -16,7 +16,8 @@
    "no_index" : {
       "directory" : [
          "t",
-         "inc"
+         "inc",
+         "t"
       ]
    },
    "prereqs" : {
@@ -33,10 +34,23 @@
       },
       "runtime" : {
          "requires" : {
-            "Mango" : "0.17"
+            "Mango" : "0.17",
+            "perl" : "5.010001"
          }
       }
    },
    "release_status" : "stable",
-   "version" : "v0.01.2"
+   "resources" : {
+      "bugtracker" : {
+         "web" : "http://github.com/necrophonic/test-mock-mango/issues"
+      },
+      "homepage" : "http://github.com/necrophonic/test-mock-mango",
+      "license" : [
+         "http://www.opensource.org/licenses/artistic-license-2.0"
+      ],
+      "repository" : {
+         "url" : "http://github.com/necrophonic/test-mock-mango"
+      }
+   },
+   "version" : "v0.01.3"
 }
