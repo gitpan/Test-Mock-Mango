@@ -4,7 +4,7 @@ use v5.10;
 use strict;
 use warnings;
 
-our $VERSION = "0.02";
+our $VERSION = '0.04';
 
 require 'Mango.pm'; # Bit useless if you don't actually have mango
 use Test::Mock::Mango::FakeData;
@@ -13,17 +13,20 @@ use Test::Mock::Mango::Collection;
 
 $Test::Mock::Mango::data  = Test::Mock::Mango::FakeData->new;
 $Test::Mock::Mango::error = undef;
+$Test::Mock::Mango::n     = undef;
 
 # If we're running with Test::Spec and in appropriate context
 # then use Test::Spec::Mocks to do our monkey patching.
 if (exists $INC{'Test/Spec.pm'} && Test::Spec->current_context) {
-	use warnings 'redefine';
-	Mango->expects('db')->returns( state $db = Test::Mock::Mango::DB->new);
+    use warnings 'redefine';
+    Mango->expects('db')->returns( Test::Mock::Mango::DB->new($_[-1]) );  
 }
 else {
- 	no warnings 'redefine';
- 	eval( q|*Mango::db = sub{state $db = Test::Mock::Mango::DB->new}| );
+    no warnings 'redefine';
+    eval( q|*Mango::db = sub{Test::Mock::Mango::DB->new($_[-1])}| );
 }
+
+
 
 1;
 
@@ -164,6 +167,49 @@ Simply set the C<error> var before the call:
 The next call will then run in an error state as if a real error has occurred.
 The C<error> var is automatically cleared with the call so you don't need
 to C<undef> it afterwards.
+
+
+=head1 TESTING UPDATE/REMOVE FAILURES ETC
+
+By default, L<Test::Mock::Mango> is optimistic and assumes that any operation
+you perform has succeeded.
+
+However, there are times when you want to do things in the event of a
+failure (e.g. when you attempt to update and the doc to update doesn't exist
+- this differs from L</"TESTING ERROR STATES"> in that nothing
+is wrong with the call, and technically the operation has "succeeded" [mongodb
+is funny like that ;) ])
+
+Mongodb normally reports this by a magic parameter called C<n> that it passes
+back in the resultant doc. This is set to the number of documents that have
+been affected (e.g. if you remove two docs, it'll be set to 2, if you update
+4 docs successfully it'll be set to 4).
+
+In it's optimistic simulation, L<Test::Mock::Mango> automaticaly sets the
+C<n> value in return docs to 1. If your software cares about the C<n> value
+and you want it set specifically (especially if you want to simulate say a "not
+updated" case) you can do this via the C<n> value of $Test::Mock::MangoL
+
+  $Test::Mock::Mango::n = 0; # The next call will now pretend no docs were updated
+
+In the same way as using C<$Test::Mock::Mango::error>, this value will be
+automatically cleared after the next call. If you want to reset it yourself
+at any point then set it to C<undef>.
+
+B<Examples>
+
+  my $doc = $mango->db('family')->collection('simpsons')->update(
+    { name => 'Bart' },
+    { name => 'Bartholomew' }
+  );
+  # $doc->{n} will be 1
+
+  $Test::Mock::Mango::n = 0;
+  my $doc = $mango->db('family')->collection('simpsons')->update(
+    { name => 'Bart' },
+    { name => 'Bartholomew' }
+  );
+  # $doc->{n} will be 0
 
 
 =head1 AUTHOR

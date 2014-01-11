@@ -1,4 +1,10 @@
-0.03	2014-01-08
+0.04	2014-01-11
+	- support for magic "n" in return docs for update and remove
+	- fix full_name to return db.collection as expected from call
+	- remove "state"
+
+
+0.03	2014-01-09
 	- add basic stubs for:
 		- Collection->remove
 		- Collection->update

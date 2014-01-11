@@ -4,10 +4,18 @@ use v5.10;
 use strict;
 use warnings;
 
+our $VERSION = '0.03';
+
 use Test::Mock::Mango::Collection;
 
-sub new { bless {}, shift }
-sub collection { state $collection = Test::Mock::Mango::Collection->new }
+sub new {
+	my $class = shift;
+
+	bless {
+		name => shift
+	}, $class;
+}
+sub collection { Test::Mock::Mango::Collection->new(shift,shift) }
 
 1;
 

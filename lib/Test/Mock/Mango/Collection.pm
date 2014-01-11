@@ -4,10 +4,25 @@ use v5.10;
 use strict;
 use warnings;
 
+our $VERSION = '0.03';
+
 use Test::Mock::Mango::Cursor;
 use Mango::BSON::ObjectID;
 
-sub new { bless {}, shift }
+# ------------------------------------------------------------------------------
+
+sub new {
+	my $class = shift;
+	my $name  = $_[-1]; pop;
+	my $db    = shift;
+
+	bless {
+		name => $name,
+		db	 => $db||undef,
+	}, $class;
+}
+
+# ------------------------------------------------------------------------------
 
 # aggregate
 #
@@ -21,7 +36,7 @@ sub aggregate {
 	my $err  = undef;
 
 	if (defined $Test::Mock::Mango::error) {
-		$err 					  = $Test::Mock::Mango::error;
+		$err                      = $Test::Mock::Mango::error;
 		$Test::Mock::Mango::error = undef;
 	}
 	else {
@@ -44,7 +59,7 @@ sub create {
 
 	my $err = undef;
 	if (defined $Test::Mock::Mango::error) {
-		$err 					  = $Test::Mock::Mango::error;
+		$err                      = $Test::Mock::Mango::error;
 		$Test::Mock::Mango::error = undef;
 	}
 
@@ -64,7 +79,7 @@ sub drop {
 
 	my $err = undef;
 	if (defined $Test::Mock::Mango::error) {
-		$err 					  = $Test::Mock::Mango::error;
+		$err                      = $Test::Mock::Mango::error;
 		$Test::Mock::Mango::error = undef;
 	}
 
@@ -86,7 +101,7 @@ sub find_one {
 	my $err = undef;
 	
 	if (defined $Test::Mock::Mango::error) {		
-		$err 					  = $Test::Mock::Mango::error;
+		$err                      = $Test::Mock::Mango::error;
 		$Test::Mock::Mango::error = undef;
 	}
 	else {
@@ -100,6 +115,10 @@ sub find_one {
 
 # ------------------------------------------------------------------------------
 
+# find
+#
+# returns a new fake cursor
+#
 sub find {	
 	return Test::Mock::Mango::Cursor->new; # Not actually passing any values
 										   # through as we're not using them :-p
@@ -107,8 +126,19 @@ sub find {
 
 # ------------------------------------------------------------------------------
 
+# full_name
+#
+# returns a concat of db.collection
+#
 sub full_name {
-	return $Test::Mock::Mango::data->{collection_name};	
+	my ($self) = @_;
+	my $db = $self->{db}||{name=>undef};
+
+	my $name = $db->{name};
+	   $name .= $name ? '.' : '';
+	   $name .= $self->{name};
+
+	return $name;
 }
 
 # ------------------------------------------------------------------------------
@@ -154,20 +184,22 @@ sub insert {
 sub remove {
 	my $self = shift;
 	my $query = ref $_[0] eq 'CODE' ? {} : shift // {};
-  	my $flags = ref $_[0] eq 'CODE' ? {} : shift // {};
+	my $flags = ref $_[0] eq 'CODE' ? {} : shift // {};
 
-  	my $cb = ref $_[-1] eq 'CODE' ? pop : undef;
+	my $cb = ref $_[-1] eq 'CODE' ? pop : undef;
 
-  	my $doc = undef; # TODO What should this return?
-  	my $err = undef;
+	my $doc = undef; # TODO What should this return?
+	my $err = undef;
 
-  	if (defined $Test::Mock::Mango::error) {
-		$err 					  = $Test::Mock::Mango::error;
+	if (defined $Test::Mock::Mango::error) {
+		$err                      = $Test::Mock::Mango::error;
 		$Test::Mock::Mango::error = undef;
 	}
-	else {
-		
+	else {		
+		$doc->{n} = $Test::Mock::Mango::n // 1;
 	}
+
+	$Test::Mock::Mango::n = undef;
 
 	return $cb->($self,$err,$doc) if $cb;
 	return $doc;
@@ -184,12 +216,15 @@ sub update {
 	my $doc = undef;
 
 	if (defined $Test::Mock::Mango::error) {
-		$err 					  = $Test::Mock::Mango::error;
+		$err                      = $Test::Mock::Mango::error;
 		$Test::Mock::Mango::error = undef;
 	}
 	else {
-		$doc = $changes;		
+		$doc = $changes;	
+		$doc->{n} = $Test::Mock::Mango::n // 1;
 	}
+
+	$Test::Mock::Mango::n = undef;
 
 	return $cb->($self,$err,$doc) if $cb;
 	return $doc;
