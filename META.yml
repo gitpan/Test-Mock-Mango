@@ -1,7 +1,7 @@
 ---
 abstract: 'Simple stubbing for Mango to allow unit tests for code that uses it'
 author:
-  - 'J Gregory <john@johngregory.me.uk>'
+  - 'J Gregory <jgregory@cpan.org>'
 build_requires:
   Test::Exception: 0.32
   Test::More: 0.99
@@ -20,11 +20,11 @@ no_index:
     - inc
     - t
 requires:
-  Mango: 0.17
+  Mango: 0.22
   perl: 5.010001
 resources:
   bugtracker: http://github.com/necrophonic/test-mock-mango/issues
   homepage: http://github.com/necrophonic/test-mock-mango
   license: http://www.opensource.org/licenses/artistic-license-2.0
   repository: http://github.com/necrophonic/test-mock-mango
-version: v0.01.4
+version: 0.03

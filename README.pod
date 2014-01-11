@@ -4,14 +4,15 @@ use v5.10;
 use strict;
 use warnings;
 
-our $VERSION = "0.01";
+our $VERSION = "0.02";
 
 require 'Mango.pm'; # Bit useless if you don't actually have mango
 use Test::Mock::Mango::FakeData;
 use Test::Mock::Mango::DB;
 use Test::Mock::Mango::Collection;
 
-$Test::Mock::Mango::data = Test::Mock::Mango::FakeData->new;
+$Test::Mock::Mango::data  = Test::Mock::Mango::FakeData->new;
+$Test::Mock::Mango::error = undef;
 
 # If we're running with Test::Spec and in appropriate context
 # then use Test::Spec::Mocks to do our monkey patching.
@@ -113,8 +114,19 @@ Returns full name of the fake collection.
 Naively inserts the given doc(s) onto the end of the current fake collection.
 
 Returns an C<oid> for each inserted document. If an C<_id> is specifiec
-in the inserted doc then it is returned, otherwise a random string is
-returned instead.
+in the inserted doc then it is returned, otherwise a new
+L<Mango::BSON::ObjectID> is returned instead.
+
+=head3 update
+
+Doesn't perform a real update. You should set the data state in
+C<$Test::Mock::Mango::data> before making the call to be what
+you expect after the update.
+
+=head3 remove
+
+Doesn't remove anything.
+
 
 
 =head2 Cursor
@@ -138,6 +150,21 @@ Returns the number of documents in the current fake collection.
 =head3 backlog
 
 Arbitarily returns 'C<2>'
+
+
+=head1 TESTING ERROR STATES
+
+L<Test::Mock::Mango> gives you the ability to simulate errors from your
+mango calls.
+
+Simply set the C<error> var before the call:
+
+  $Test::Mock::Mango::error = 'oh noes!';
+
+The next call will then run in an error state as if a real error has occurred.
+The C<error> var is automatically cleared with the call so you don't need
+to C<undef> it afterwards.
+
 
 =head1 AUTHOR
 
