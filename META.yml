@@ -27,4 +27,4 @@ resources:
   homepage: http://github.com/necrophonic/test-mock-mango
   license: http://www.opensource.org/licenses/artistic-license-2.0
   repository: http://github.com/necrophonic/test-mock-mango
-version: v0.08.2
+version: '0.09'
